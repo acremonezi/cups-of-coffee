@@ -6,14 +6,15 @@
 
 
 void setup() {
-  pinSettings();            // Pin Settings Setup
-  OTAsetup();               // OTA - Setup
-  tempSensorSetup();        // OneWire Temperature Sensor
-  mqttConnect();            // MQTT Setup
+  pinSettings();                        // Pin Settings Setup
+  OTAsetup();                           // OTA - Setup
+  tempSensorSetup();                    // OneWire Temperature Sensor
+  mqttConnect();                        // MQTT Setup
+  espClientPrint();                     // Print ESP Client IP and MAC Address
 }
 
 void loop() {
-  OTA();                    // OTA
-  tempSensor();             // OneWire
-  mqttPublish();            // MQTT Publish
+  OTA();                                // OTA
+  tempSensor();                         // OneWire
+  mqttPublish();                        // MQTT Publish
 }

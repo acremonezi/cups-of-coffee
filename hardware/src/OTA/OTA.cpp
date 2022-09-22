@@ -8,14 +8,23 @@
 #ifndef STASSID
     #define STASSID "Quantum_IoT"
     #define STAPSK  "Y7Q9vD8V10b!!!"
+
+    #define NAME "Saeco xSmall"           // Coffee Machine Name
+    #define HOSTNAME "Saeco_xSmall"       // Coffee Machine Network Hostname
+    #define PLACE "Alcides Home"
 #endif
 
 
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-WiFiClient espClient;
+String espClientIP = "";
+String espClientMAC = "";
+String espClientName = "";
+String espClientHostname = "";
+String espClientPlace = "";
 
+WiFiClient espClient;
 
 void OTAsetup() {
   Serial.begin(9600);
@@ -34,7 +43,8 @@ void OTAsetup() {
   // ArduinoOTA.setPort(8266);
 
   // Hostname defaults to esp8266-[ChipID]
-  ArduinoOTA.setHostname("saeco_xsmall");
+  ArduinoOTA.setHostname(HOSTNAME);
+  WiFi.hostname(HOSTNAME);
 
   // No authentication by default
   // ArduinoOTA.setPassword("admin");
@@ -74,12 +84,38 @@ void OTAsetup() {
       Serial.println("End Failed");
     }
   });
+
   ArduinoOTA.begin();
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+
+  // Store Wifi IP and MAC
+  espClientIP = WiFi.localIP().toString().c_str();
+  espClientMAC = WiFi.macAddress();
+  espClientName = NAME;
+  espClientHostname = WiFi.hostname();
+  espClientPlace = PLACE;
+
+  // Print IP and MAC
+  espClientPrint();
+  
 }
 
 void OTA() {
   ArduinoOTA.handle();
+}
+
+void espClientPrint() {
+  // Print IP and MAC Addresses
+  Serial.println("-------------------------------------");
+  Serial.println("Ready !!!");
+  Serial.print("Machine Name: ");
+  Serial.println(espClientName);
+  Serial.print("Hostname: ");
+  Serial.println(espClientHostname);
+  Serial.print("Place: ");
+  Serial.println(espClientPlace);
+  Serial.print("IP address: ");
+  Serial.println(espClientIP);
+  Serial.print("MAC address: ");
+  Serial.println(espClientMAC);
+  Serial.println("-------------------------------------");
 }

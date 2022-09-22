@@ -27,11 +27,16 @@ void mqttConnect() {
   //client.setCallback(callback);
 
   while (!client.connected()) {
-      client_id = "saeco_xsmall_";
-      client_id += String(WiFi.macAddress());
+
       Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
       if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
+
           Serial.println("MQTT broker connected");
+          
+          // Set Client ID to MAC Address
+          client_id = espClientMAC;
+          client_id.replace(":", "");
+
       } else {
           Serial.print("failed with state ");
           Serial.print(client.state());
@@ -49,7 +54,7 @@ void mqttPublish() {
   // Inside the brackets, 200 is the RAM allocated to this document.
   // Don't forget to change this value to match your requirement.
   // Use https://arduinojson.org/v6/assistant to compute the capacity.
-  StaticJsonDocument<200> doc;
+  StaticJsonDocument<256> doc;
 
   // StaticJsonObject allocates memory on the stack, it can be
   // replaced by DynamicJsonDocument which allocates in the heap.
@@ -57,10 +62,15 @@ void mqttPublish() {
   // DynamicJsonDocument  doc(200);
 
   // Add values in the document
-  doc["Machine"] = client_id;
+  doc["Name"] = espClientName;
+  doc["Hostname"] = espClientHostname;
+  doc["Place"] = espClientPlace;
+  doc["IP"] = espClientIP;
+  doc["MAC"] = espClientMAC;
+  doc["Coffee_Cups"] = 1;
   doc["Boiler_Temperature"] = tempC;
-  doc["Grinder_Runtime"] = 1;
-  doc["Water_Pump_Runtime"] = 1;
+  doc["Grinder_Runtime"] = random(100)/10;
+  doc["Water_Pump_Runtime"] = random(100)/10;
  
   // Generate the minified JSON and send it to the Serial port.
   serializeJson(doc, Serial);
@@ -68,7 +78,7 @@ void mqttPublish() {
   // Start a new line
   Serial.println();
 
- char outputJson[128];
+ char outputJson[256];
     serializeJson(doc, outputJson);
   //Publish the data to the topic
   client.publish(topic, outputJson);
